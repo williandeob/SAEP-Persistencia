@@ -16,8 +16,8 @@ public class Exec {
 		testResolucaoPersiste();
 		testResolucaoRecuperar();
 		testResolucaoById();
-		testResolucaoExcluir();
-		
+		testResolucaoList();
+		testResolucaoExcluir();	
 	}
 
 	public static void testResolucaoPersiste() {
@@ -63,6 +63,12 @@ public class Exec {
 		}else{
 			System.out.println("Falha na remoção do arquivo");
 		}
+	}
+	
+	public static void testResolucaoList(){
+		ResolucaoRepository resolucaoRepository = new ResolucaoRepositoryImp();
+		List<String> lista = resolucaoRepository.resolucoes();
+		System.out.println(lista.size());
 	}
 
 }

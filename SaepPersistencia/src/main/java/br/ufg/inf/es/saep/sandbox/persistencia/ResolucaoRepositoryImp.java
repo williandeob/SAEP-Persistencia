@@ -2,21 +2,26 @@ package br.ufg.inf.es.saep.sandbox.persistencia;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import br.ufg.inf.es.saep.sandbox.dominio.CampoExigidoNaoFornecido;
 import br.ufg.inf.es.saep.sandbox.dominio.IdentificadorExistente;
+import br.ufg.inf.es.saep.sandbox.dominio.Regra;
 import br.ufg.inf.es.saep.sandbox.dominio.Resolucao;
 import br.ufg.inf.es.saep.sandbox.dominio.ResolucaoRepository;
+import br.ufg.inf.es.saep.sandbox.dominio.ResolucaoUsaTipoException;
 import br.ufg.inf.es.saep.sandbox.dominio.Tipo;
 import br.ufg.inf.es.saep.sandbox.util.UtilJsonPersistencia;
 
 public class ResolucaoRepositoryImp implements ResolucaoRepository {
-	private static String repository = "src/main/resources/br/ufg/inf/es/saep/sandbox/persistencia/Resolucao/";
+	private static String repositoryResolucao = "src/main/resources/br/ufg/inf/es/saep/sandbox/persistencia/Resolucao/";
+	private static String repositoryTipo = "src/main/resources/br/ufg/inf/es/saep/sandbox/persistencia/Tipo/";
 
 	@Override
 	public Resolucao byId(String id) {
-		File fileJsonResolucao = new File(repository.concat(id).concat(".json"));
+		File fileJsonResolucao = new File(repositoryResolucao.concat(id).concat(".json"));
 		Resolucao resolucao = null;
 		if (!fileJsonResolucao.exists()) {
 			return null;
@@ -45,7 +50,7 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 		}
 
 		try {
-			UtilJsonPersistencia.persistirJson(resolucao, repository.concat(resolucao.getId()).concat(".json"));
+			UtilJsonPersistencia.persistirJson(resolucao, repositoryResolucao.concat(resolucao.getId()).concat(".json"));
 			return resolucao.getId();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -55,38 +60,110 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 
 	@Override
 	public boolean remove(String identificador) {
-		File fileJsonResolucao = new File(repository.concat(identificador).concat(".json"));
+		File fileJsonResolucao = new File(repositoryResolucao.concat(identificador).concat(".json"));
 		return fileJsonResolucao.delete();
 	}
 
 	@Override
 	public List<String> resolucoes() {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> listaDeIdentificadore = new ArrayList<String>();
+		File diretorioResolucao = new File(repositoryResolucao);
+		String[] namesFiles = diretorioResolucao.list();
+		if(namesFiles.length > 0){
+			for(String name : namesFiles){
+				listaDeIdentificadore.add(name.replace(".json", "").trim());
+			}
+		}
+		return listaDeIdentificadore;
 	}
 
 	@Override
 	public void persisteTipo(Tipo tipo) {
-		// TODO Auto-generated method stub
+		File fileTipo = new File(repositoryTipo.concat(tipo.getId()).concat(".json"));
+		
+		if(fileTipo.exists()){
+			throw new IdentificadorExistente("id");
+		}
+
+		try {
+			UtilJsonPersistencia.persistirJson(tipo, repositoryTipo.concat(tipo.getId()).concat(".json"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
 	@Override
 	public void removeTipo(String codigo) {
-		// TODO Auto-generated method stub
-
+		File fileJsonTipo = new File(repositoryTipo.concat(codigo).concat(".json"));
+		if(fileJsonTipo.exists()){
+			
+			File fileJsonResolucao = new File(repositoryResolucao);
+			File[] listResolucaoFiles = fileJsonResolucao.listFiles();
+			if(listResolucaoFiles.length>0){
+				
+				for(File file : listResolucaoFiles){
+					try {
+						Resolucao resolucao = (Resolucao) UtilJsonPersistencia.recuperarJson(file.getAbsolutePath(), Resolucao.class);
+						List<Regra> regras = resolucao.getRegras();
+						
+						if(regras.size()>0){
+							Iterator<Regra> iRegra = regras.iterator();
+							while(iRegra.hasNext()){
+								Regra regra = iRegra.next();
+								if(regra.getTipoRelato().equals(codigo)){
+									throw new ResolucaoUsaTipoException("Existe referencia do tipo com a resolução");
+								}	
+							}	
+						}
+										
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}				
+				
+			}
+			
+			fileJsonTipo.delete();
+		}
 	}
 
 	@Override
 	public Tipo tipoPeloCodigo(String codigo) {
-		// TODO Auto-generated method stub
-		return null;
+		Tipo tipo = null;
+		File fileJsonTipo = new File(repositoryTipo.concat(codigo).concat(".json"));
+		
+		if(fileJsonTipo.exists()){
+			try {
+				tipo = (Tipo) UtilJsonPersistencia.recuperarJson(fileJsonTipo.getAbsolutePath(), Tipo.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return tipo;
 	}
 
 	@Override
 	public List<Tipo> tiposPeloNome(String nome) {
-		// TODO Auto-generated method stub
-		return null;
+		File tipoDiretorio = new File(repositoryTipo);
+		File[] listaFilesTipo = tipoDiretorio.listFiles();
+		List<Tipo> listTipos = new ArrayList<Tipo>();
+		
+		if(listaFilesTipo.length > 0){
+			for(File file : listaFilesTipo){
+				try {
+					Tipo tipoRecuperado = (Tipo) UtilJsonPersistencia.recuperarJson(file.getAbsolutePath(), Tipo.class);
+					if(tipoRecuperado.getNome().contains(nome)){
+						listTipos.add(tipoRecuperado);
+					}			
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}	
+		}
+		
+		return listTipos;
 	}
 
 }
