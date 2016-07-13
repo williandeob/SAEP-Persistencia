@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.text.InternationalFormatter;
-
 import br.ufg.inf.es.saep.sandbox.dominio.Avaliavel;
 import br.ufg.inf.es.saep.sandbox.dominio.IdentificadorDesconhecido;
 import br.ufg.inf.es.saep.sandbox.dominio.Nota;
@@ -43,7 +41,6 @@ public class ParecerRepositoryImp implements ParecerRepository{
 				}
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -52,8 +49,26 @@ public class ParecerRepositoryImp implements ParecerRepository{
 
 	@Override
 	public void removeNota(String id, Avaliavel original) {
-		// TODO Auto-generated method stub
-		
+		File file = new File(repositoryParecer.concat(id).concat(".json"));
+		if(file.exists()){
+			
+			try {
+				Parecer parecer = (Parecer) UtilJsonPersistencia.recuperarJson(file.getAbsolutePath(), Parecer.class);
+				List<Nota> notasParecer = parecer.getNotas();
+				Iterator<Nota> iNotas = notasParecer.iterator();
+				
+				while(iNotas.hasNext()){
+					Nota nota = iNotas.next();
+					if(nota.getItemOriginal().equals(original)){
+						notasParecer.remove(original);
+					}
+				}		
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 	@Override
@@ -70,8 +85,17 @@ public class ParecerRepositoryImp implements ParecerRepository{
 
 	@Override
 	public Parecer byId(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		File file = new File(repositoryParecer.concat(id).concat(".json"));
+		Parecer parecer = null;
+		if(file.exists()){
+			try {
+				parecer = (Parecer) UtilJsonPersistencia.recuperarJson(file.getAbsolutePath(), Parecer.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}	
+		}
+		
+		return parecer;
 	}
 
 	@Override
