@@ -166,4 +166,12 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 		return listTipos;
 	}
 
+	public static String getRepositoryResolucao() {
+		return repositoryResolucao;
+	}
+
+	public static String getRepositoryTipo() {
+		return repositoryTipo;
+	}
+
 }
