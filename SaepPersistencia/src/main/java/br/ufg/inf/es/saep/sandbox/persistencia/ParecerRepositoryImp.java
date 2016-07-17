@@ -14,11 +14,10 @@ import br.ufg.inf.es.saep.sandbox.dominio.Radoc;
 import br.ufg.inf.es.saep.sandbox.util.UtilJsonPersistencia;
 
 public class ParecerRepositoryImp implements ParecerRepository{
-	public static String repositoryParecer = "src/main/resources/br/ufg/inf/es/saep/sandbox/persistencia/Parecer/";
 	
 	@Override
 	public void adicionaNota(String id, Nota nota) {
-		File file = new File(repositoryParecer.concat(id).concat(".json"));
+		File file = new File(ConfigRepository.getRepositoryParecer().concat(id).concat(".json"));
 		if(!file.exists()){
 			throw new IdentificadorDesconhecido("id");
 		}else{
@@ -49,7 +48,7 @@ public class ParecerRepositoryImp implements ParecerRepository{
 
 	@Override
 	public void removeNota(String id, Avaliavel original) {
-		File file = new File(repositoryParecer.concat(id).concat(".json"));
+		File file = new File(ConfigRepository.getRepositoryParecer().concat(id).concat(".json"));
 		if(file.exists()){
 			
 			try {
@@ -85,7 +84,7 @@ public class ParecerRepositoryImp implements ParecerRepository{
 
 	@Override
 	public Parecer byId(String id) {
-		File file = new File(repositoryParecer.concat(id).concat(".json"));
+		File file = new File(ConfigRepository.getRepositoryParecer().concat(id).concat(".json"));
 		Parecer parecer = null;
 		if(file.exists()){
 			try {

@@ -12,6 +12,7 @@ import br.ufg.inf.es.saep.sandbox.dominio.CampoExigidoNaoFornecido;
 import br.ufg.inf.es.saep.sandbox.dominio.IdentificadorExistente;
 import br.ufg.inf.es.saep.sandbox.dominio.Regra;
 import br.ufg.inf.es.saep.sandbox.dominio.Resolucao;
+import br.ufg.inf.es.saep.sandbox.persistencia.ConfigRepository;
 import br.ufg.inf.es.saep.sandbox.persistencia.ResolucaoRepositoryImp;
 
 public class TesteResolucaoRepository{
@@ -34,7 +35,7 @@ public class TesteResolucaoRepository{
 	
 	@After
 	public void tearDown(){
-		File diretorio = new File(ResolucaoRepositoryImp.getRepositoryResolucao());
+		File diretorio = new File(ConfigRepository.getRepositoryResolucao());
 		File[] files = diretorio.listFiles();
 		for(File file : files){
 			file.delete();
@@ -49,8 +50,8 @@ public class TesteResolucaoRepository{
 	
 	@Test
 	public void testRemove() {
-		resolucaoRepository.remove("1");
-		File diretorio = new File(ResolucaoRepositoryImp.getRepositoryResolucao());
+		resolucaoRepository.remove(resolucao.getId());
+		File diretorio = new File(ConfigRepository.getRepositoryResolucao());
 		Assert.assertEquals(0, diretorio.list().length);
 	}
 	
@@ -70,5 +71,5 @@ public class TesteResolucaoRepository{
 		Resolucao resolucaoSemId = new Resolucao("", "consuni", "avaliação de progressão", new Date(), regras);
 		resolucaoRepository.persiste(resolucaoSemId);
 	}
-
+	
 }

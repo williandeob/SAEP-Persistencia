@@ -16,12 +16,10 @@ import br.ufg.inf.es.saep.sandbox.dominio.Tipo;
 import br.ufg.inf.es.saep.sandbox.util.UtilJsonPersistencia;
 
 public class ResolucaoRepositoryImp implements ResolucaoRepository {
-	private static String repositoryResolucao = "src/main/resources/br/ufg/inf/es/saep/sandbox/persistencia/Resolucao/";
-	private static String repositoryTipo = "src/main/resources/br/ufg/inf/es/saep/sandbox/persistencia/Tipo/";
 
 	@Override
 	public Resolucao byId(String id) {
-		File fileJsonResolucao = new File(repositoryResolucao.concat(id).concat(".json"));
+		File fileJsonResolucao = new File(ConfigRepository.getRepositoryResolucao().concat(id).concat(".json"));
 		Resolucao resolucao = null;
 		if (!fileJsonResolucao.exists()) {
 			return null;
@@ -50,7 +48,7 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 		}
 
 		try {
-			UtilJsonPersistencia.persistirJson(resolucao, repositoryResolucao.concat(resolucao.getId()).concat(".json"));
+			UtilJsonPersistencia.persistirJson(resolucao, ConfigRepository.getRepositoryResolucao().concat(resolucao.getId()).concat(".json"));
 			return resolucao.getId();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -60,14 +58,14 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 
 	@Override
 	public boolean remove(String identificador) {
-		File fileJsonResolucao = new File(repositoryResolucao.concat(identificador).concat(".json"));
+		File fileJsonResolucao = new File(ConfigRepository.getRepositoryResolucao().concat(identificador).concat(".json"));
 		return fileJsonResolucao.delete();
 	}
 
 	@Override
 	public List<String> resolucoes() {
 		List<String> listaDeIdentificadore = new ArrayList<String>();
-		File diretorioResolucao = new File(repositoryResolucao);
+		File diretorioResolucao = new File(ConfigRepository.getRepositoryResolucao());
 		String[] namesFiles = diretorioResolucao.list();
 		if(namesFiles.length > 0){
 			for(String name : namesFiles){
@@ -79,14 +77,14 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 
 	@Override
 	public void persisteTipo(Tipo tipo) {
-		File fileTipo = new File(repositoryTipo.concat(tipo.getId()).concat(".json"));
+		File fileTipo = new File(ConfigRepository.getRepositoryTipo().concat(tipo.getId()).concat(".json"));
 		
 		if(fileTipo.exists()){
 			throw new IdentificadorExistente("id");
 		}
 
 		try {
-			UtilJsonPersistencia.persistirJson(tipo, repositoryTipo.concat(tipo.getId()).concat(".json"));
+			UtilJsonPersistencia.persistirJson(tipo, ConfigRepository.getRepositoryTipo().concat(tipo.getId()).concat(".json"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -95,10 +93,10 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 
 	@Override
 	public void removeTipo(String codigo) {
-		File fileJsonTipo = new File(repositoryTipo.concat(codigo).concat(".json"));
+		File fileJsonTipo = new File(ConfigRepository.getRepositoryTipo().concat(codigo).concat(".json"));
 		if(fileJsonTipo.exists()){
 			
-			File fileJsonResolucao = new File(repositoryResolucao);
+			File fileJsonResolucao = new File(ConfigRepository.getRepositoryResolucao());
 			File[] listResolucaoFiles = fileJsonResolucao.listFiles();
 			if(listResolucaoFiles.length>0){
 				
@@ -131,7 +129,7 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 	@Override
 	public Tipo tipoPeloCodigo(String codigo) {
 		Tipo tipo = null;
-		File fileJsonTipo = new File(repositoryTipo.concat(codigo).concat(".json"));
+		File fileJsonTipo = new File(ConfigRepository.getRepositoryTipo().concat(codigo).concat(".json"));
 		
 		if(fileJsonTipo.exists()){
 			try {
@@ -146,7 +144,7 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 
 	@Override
 	public List<Tipo> tiposPeloNome(String nome) {
-		File tipoDiretorio = new File(repositoryTipo);
+		File tipoDiretorio = new File(ConfigRepository.getRepositoryTipo());
 		File[] listaFilesTipo = tipoDiretorio.listFiles();
 		List<Tipo> listTipos = new ArrayList<Tipo>();
 		
@@ -164,14 +162,6 @@ public class ResolucaoRepositoryImp implements ResolucaoRepository {
 		}
 		
 		return listTipos;
-	}
-
-	public static String getRepositoryResolucao() {
-		return repositoryResolucao;
-	}
-
-	public static String getRepositoryTipo() {
-		return repositoryTipo;
 	}
 
 }
