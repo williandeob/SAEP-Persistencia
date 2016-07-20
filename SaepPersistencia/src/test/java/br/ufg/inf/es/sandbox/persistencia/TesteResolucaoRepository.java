@@ -15,6 +15,7 @@ import br.ufg.inf.es.saep.sandbox.dominio.CampoExigidoNaoFornecido;
 import br.ufg.inf.es.saep.sandbox.dominio.IdentificadorExistente;
 import br.ufg.inf.es.saep.sandbox.dominio.Regra;
 import br.ufg.inf.es.saep.sandbox.dominio.Resolucao;
+import br.ufg.inf.es.saep.sandbox.dominio.ResolucaoUsaTipoException;
 import br.ufg.inf.es.saep.sandbox.dominio.Tipo;
 import br.ufg.inf.es.saep.sandbox.persistencia.ConfigRepository;
 import br.ufg.inf.es.saep.sandbox.persistencia.ResolucaoRepositoryImp;
@@ -114,6 +115,11 @@ public class TesteResolucaoRepository{
 		List<Tipo> listaDeTipos;
 		listaDeTipos = resolucaoRepository.tiposPeloNome("naoCadastrado");
 		Assert.assertTrue(listaDeTipos.size() == 0);
+	}
+	
+	@Test(expected = ResolucaoUsaTipoException.class)
+	public void testRemoverTipoUSadoEmResoliucao(){
+		resolucaoRepository.removeTipo("1");
 	}
 
 }
