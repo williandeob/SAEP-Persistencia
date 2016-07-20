@@ -108,5 +108,12 @@ public class TesteResolucaoRepository{
 		listaDeTipos = resolucaoRepository.tiposPeloNome("nome");
 		Assert.assertTrue(listaDeTipos.size()>0);
 	}
+	
+	@Test
+	public void testTipoPeloNomeNaoPersistido(){
+		List<Tipo> listaDeTipos;
+		listaDeTipos = resolucaoRepository.tiposPeloNome("naoCadastrado");
+		Assert.assertTrue(listaDeTipos.size() == 0);
+	}
 
 }
