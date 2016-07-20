@@ -101,5 +101,12 @@ public class TesteResolucaoRepository{
 		Tipo tipoRecuperado = resolucaoRepository.tipoPeloCodigo(tipo.getId());
 		Assert.assertEquals(tipo, tipoRecuperado);
 	}
+	
+	@Test
+	public void testTipoPeloNome(){
+		List<Tipo> listaDeTipos;
+		listaDeTipos = resolucaoRepository.tiposPeloNome("nome");
+		Assert.assertTrue(listaDeTipos.size()>0);
+	}
 
 }
